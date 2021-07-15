@@ -1,0 +1,4 @@
+- name: restart dhcpd
+  systemd:
+    name: "{{ netinstall_dhcpd_name }}"
+    state: restarted

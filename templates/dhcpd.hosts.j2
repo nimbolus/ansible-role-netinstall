@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+
+{% for host in netinstall_hosts %}
+host {{ host.name }} {
+    hardware ethernet {{ host.mac }};
+    fixed-address {{ host.ip }};
+    option host-name "{{ host.name }}";
+}
+{% endfor %}

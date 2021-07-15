@@ -1,0 +1,15 @@
+---
+netinstall_packages:
+  - isc-dhcp-server
+  - tftpd-hpa
+  - pxelinux
+  - nginx
+
+netinstall_services:
+  - isc-dhcp-server
+  - nginx
+  - tftpd-hpa
+
+netinstall_tftp_root: /srv/tftp
+netinstall_http_root: /var/www/html
+netinstall_dhcpd_name: isc-dhcp-server

@@ -1,0 +1,22 @@
+#!ipxe
+###
+### Preconfigured installations
+###
+
+:custom
+clear custom_choice
+menu Preconfigured installations
+item --gap Preconfigured installations
+item pre_bymac ${space} Loads preconfigured install by MAC
+
+choose custom_choice || goto custom_exit
+echo ${cls}
+goto ${custom_choice}
+goto custom_exit
+
+:pre_bymac
+set custom_file mac-${netX/mac:hexhyp}.ipxe
+chain ${custom_file} || echo error with ${custom_file} && sleep 2 && goto custom
+
+:custom_exit
+exit

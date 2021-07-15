@@ -1,0 +1,7 @@
+---
+collections: []
+
+roles:
+  - name: netbootxyz
+    src: https://github.com/netbootxyz/netboot.xyz.git
+    version: master

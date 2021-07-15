@@ -1,0 +1,48 @@
+# {{ ansible_managed }}
+#version=STABLE
+
+## Use network installation
+url --url="http://ftp.halifax.rwth-aachen.de/centos/8-stream/BaseOS/x86_64/os/"
+
+# Use graphical install
+graphical
+# Run the Setup Agent on first boot
+firstboot --enable
+ignoredisk --only-use={{ host.drive | default('sda') }}
+# Keyboard layouts
+keyboard --vckeymap=de --xlayouts='de'
+# System language
+lang en_US.UTF-8
+
+# Network information
+{% if netinstall_kickstart_ipv4 == "static" %}
+network --bootproto={{ netinstall_kickstart_ipv4 }} --device=eth0 --gateway={{ netinstall_router }} --ip={{ host.ip }} --netmask={{ netinstall_netmask }} --ipv6={{ netinstall_kickstart_ipv6 }} --nameserver={{ netinstall_dns_servers | join(',') }} --activate
+{% else %}
+network --bootproto={{ netinstall_kickstart_ipv4 }} --activate
+{% endif %}
+network --hostname={{ host.name }}.{{ netinstall_domain }}
+
+# Root password
+rootpw --iscrypted {{ host.root_password | default('') }}
+# System services
+services --enabled="chronyd"
+# System timezone
+timezone Europe/Berlin --isUtc --ntpservers={{ netinstall_ntp_servers | join(',') }}
+# System bootloader configuration
+bootloader --append=" crashkernel=auto" --location=mbr --boot-drive={{ host.drive | default('sda') }}
+
+# Partitioning
+autopart --type=lvm --nohome
+clearpart --initlabel --drives={{ host.drive | default('sda') }} --all
+
+reboot
+
+%packages
+chrony
+%end
+
+{% if host.post_config is defined %}
+%post
+{{ host.post_config }}
+%end
+{% endif %}

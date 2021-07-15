@@ -1,0 +1,33 @@
+# {{ ansible_managed }}
+
+default-lease-time 43200;
+max-lease-time 86400;
+ddns-update-style interim;
+
+option domain-name "{{ netinstall_domain }}";
+option domain-name-servers {{ netinstall_dns_servers | join(',') }};
+option ntp-servers  {{ netinstall_ntp_servers | join(',') }};
+
+subnet {{ netinstall_network }} netmask {{ netinstall_netmask }} {
+  pool {
+    range {{ netinstall_dhcpd_range_start }} {{ netinstall_dhcpd_range_end }};
+{% if netinstall_deny_unknown %}
+    deny unknown-clients;
+{% endif %}
+  }
+  option subnet-mask {{ netinstall_netmask }};
+  option routers {{ netinstall_router }};
+
+  class "pxeclients"{
+    match if substring (option vendor-class-identifier, 0, 9) = "PXEClient";
+    next-server {{ netinstall_router }};
+    filename "{{ netinstall_dhcp_filename }}";
+  }
+  class "httpclients" {
+    match if substring (option vendor-class-identifier, 0, 10) = "HTTPClient";
+    option vendor-class-identifier "HTTPClient";
+    filename "http://{{ netinstall_router }}/{{ netinstall_dhcp_filename }}";
+  }
+}
+
+include "/etc/dhcp/dhcpd.hosts";

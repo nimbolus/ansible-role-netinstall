@@ -1,0 +1,23 @@
+---
+- hosts: server
+  vars:
+    netinstall_netbootxyz_endpoints_url: https://raw.githubusercontent.com/netbootxyz/netboot.xyz/master/endpoints.yml
+    netinstall_netbootxyz_endpoints_file: netbootxyz_endpoints.yml
+    custom_generate_menus: true
+    custom_templates_dir: "{{ playbook_dir }}/custom"
+  pre_tasks:
+    # workaround: file is not included in netbootxyz role
+    - get_url:
+        url: "{{ netinstall_netbootxyz_endpoints_url }}"
+        dest: "{{ playbook_dir }}/{{ netinstall_netbootxyz_endpoints_file }}"
+        mode: '0644'
+      delegate_to: localhost
+    - include_vars:
+        file: "{{ playbook_dir }}/{{ netinstall_netbootxyz_endpoints_file }}"
+  roles:
+    - role: netbootxyz
+      become: true
+      tags: netbootxyz
+    - role: nimbolus.netinstall
+      become: true
+      tags: netinstall

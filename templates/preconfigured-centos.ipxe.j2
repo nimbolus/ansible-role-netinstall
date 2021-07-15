@@ -1,0 +1,25 @@
+#!ipxe
+
+# CentOS Operating System
+# http://www.centos.org
+
+isset ${dhcp-server} && set ipparam ip=dhcp || set ipparam ip=${ip}::${gateway}:${netmask}:::none nameserver=${dns}
+set ipparam BOOTIF=${netX/mac} ${ipparam}
+
+:centos
+set osversion {{ host.os_version }}
+set dir ${centos_base_dir}/${osversion}/BaseOS/${arch}/os
+iseq ${osversion} 7 && set dir ${centos_base_dir}/${osversion}/os/${arch} ||
+set repo ${centos_mirror}/${dir}
+
+:kickstart
+set params inst.ks={{ netinstall_http_url }}/kickstart/mac-${netX/mac:hexhyp}.ks
+
+:bootos_images
+imgfree
+kernel ${centos_mirror}/${dir}/images/pxeboot/vmlinuz inst.repo=${repo} ${params} ${ipparam} {{ netinstall_kernel_params }}
+initrd ${centos_mirror}/${dir}/images/pxeboot/initrd.img
+echo
+echo MD5sums:
+md5sum vmlinuz initrd.img
+boot

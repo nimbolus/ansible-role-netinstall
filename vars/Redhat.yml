@@ -1,0 +1,15 @@
+---
+netinstall_packages:
+  - dhcd
+  - tftp-server
+  - syslinux
+  - nginx
+
+netinstall_services:
+  - dhcpd
+  - nginx
+  - tftp.socket
+
+netinstall_tftp_root: /var/lib/tftpboot
+netinstall_http_root: /usr/share/nginx/html
+netinstall_dhcpd_name: dhcpd

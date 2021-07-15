@@ -1,0 +1,56 @@
+---
+- name: configure dhcpd interface
+  lineinfile:
+    path: /etc/default/isc-dhcp-server
+    line: "INTERFACESv4=\"{{ netinstall_interface }}\""
+    regexp: '^INTERFACESv4='
+  when: ansible_distribution == 'Debian'
+
+- name: configure dhcpd
+  template:
+    src: dhcpd.conf.j2
+    dest: /etc/dhcp/dhcpd.conf
+    mode: '0644'
+  notify: restart dhcpd
+
+- name: configure dhcpd hosts
+  template:
+    src: dhcpd.hosts.j2
+    dest: /etc/dhcp/dhcpd.hosts
+    mode: '0644'
+  notify: restart dhcpd
+  tags: netinstall_dhcp_leases
+
+- name: symlink from http dir to tftp
+  file:
+    src: "{{ netinstall_http_root }}"
+    dest: "{{ netinstall_tftp_root }}"
+    state: link
+
+- name: configure preconfigured ipxe menus
+  template:
+    src: preconfigured-{{ host.os_type }}.ipxe.j2
+    dest: "{{ netinstall_http_root }}/custom/mac-{{ host.mac | replace(':', '-') }}.ipxe"
+    mode: '0644'
+  loop: "{{ netinstall_hosts }}"
+  loop_control:
+    loop_var: host
+    label: "{{ host.name }}"
+  when: host.install | default(false)
+
+- name: create kickstart directory in http root
+  file:
+    path: "{{ netinstall_http_root }}/kickstart"
+    state: directory
+    mode: '0644'
+
+- name: create kickstart file
+  template:
+    src: "{{ netinstall_kickstart_template }}"
+    dest: "{{ netinstall_http_root }}/kickstart/mac-{{ host.mac | replace(':', '-') }}.ks"
+    mode: '0644'
+  loop: "{{ netinstall_hosts }}"
+  loop_control:
+    loop_var: host
+    label: "{{ host.name }}"
+  when: host.install | default(false)
