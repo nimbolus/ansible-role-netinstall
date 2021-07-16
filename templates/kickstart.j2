@@ -32,8 +32,7 @@ timezone Europe/Berlin --isUtc --ntpservers={{ netinstall_ntp_servers | join(','
 bootloader --append=" crashkernel=auto" --location=mbr --boot-drive={{ host.drive | default('sda') }}
 
 # Partitioning
-autopart --type=lvm --nohome
-clearpart --initlabel --drives={{ host.drive | default('sda') }} --all
+{{ host.disk_setup | default(netinstall_disk_setup) }}
 
 reboot
 

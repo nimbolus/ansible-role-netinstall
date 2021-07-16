@@ -31,3 +31,6 @@ netinstall_dhcpd_range_end:  10.0.0.200
 netinstall_deny_unknown: false
 
 netinstall_kernel_params: initrd=initrd.magic ${cmdline}
+netinstall_disk_setup: |
+  autopart --type=lvm --nohome
+  clearpart --initlabel --drives={{ host.drive | default('sda') }} --all
