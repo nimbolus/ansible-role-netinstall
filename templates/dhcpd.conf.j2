@@ -20,13 +20,13 @@ subnet {{ netinstall_network }} netmask {{ netinstall_netmask }} {
 
   class "pxeclients"{
     match if substring (option vendor-class-identifier, 0, 9) = "PXEClient";
-    next-server {{ netinstall_router }};
+    next-server {{ netinstall_tftp_server }};
     filename "{{ netinstall_dhcp_filename }}";
   }
   class "httpclients" {
     match if substring (option vendor-class-identifier, 0, 10) = "HTTPClient";
     option vendor-class-identifier "HTTPClient";
-    filename "http://{{ netinstall_router }}/{{ netinstall_dhcp_filename }}";
+    filename "{{ netinstall_http_url }}/{{ netinstall_dhcp_filename }}";
   }
 }
 

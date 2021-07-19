@@ -24,6 +24,7 @@ netinstall_hosts: []
 
 netinstall_dhcp_filename: netboot.xyz.efi
 netinstall_http_url: http://{{ netinstall_router }}
+netinstall_tftp_server: "{{ netinstall_router }}"
 netinstall_tftp_servername: "{{ ansible_nodename }}"
 
 netinstall_dhcpd_range_start: 10.0.0.20

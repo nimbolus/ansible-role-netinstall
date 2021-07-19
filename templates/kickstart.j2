@@ -16,11 +16,10 @@ lang en_US.UTF-8
 
 # Network information
 {% if netinstall_kickstart_ipv4 == "static" %}
-network --bootproto={{ netinstall_kickstart_ipv4 }} --device=eth0 --gateway={{ netinstall_router }} --ip={{ host.ip }} --netmask={{ netinstall_netmask }} --ipv6={{ netinstall_kickstart_ipv6 }} --nameserver={{ netinstall_dns_servers | join(',') }} --activate
+network --activate --hostname={{ host.name }}.{{ netinstall_domain }} --bootproto={{ netinstall_kickstart_ipv4 }} --device=eth0 --gateway={{ netinstall_router }} --ip={{ host.ip }} --netmask={{ netinstall_netmask }} --ipv6={{ netinstall_kickstart_ipv6 }} --nameserver={{ netinstall_dns_servers | join(',') }}
 {% else %}
-network --bootproto={{ netinstall_kickstart_ipv4 }} --activate
+network --activate --hostname={{ host.name }}.{{ netinstall_domain }} --bootproto={{ netinstall_kickstart_ipv4 }}
 {% endif %}
-network --hostname={{ host.name }}.{{ netinstall_domain }}
 
 # Root password
 rootpw --iscrypted {{ host.root_password | default('') }}

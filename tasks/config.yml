@@ -42,7 +42,7 @@
   file:
     path: "{{ netinstall_http_root }}/kickstart"
     state: directory
-    mode: '0644'
+    mode: '0755'
 
 - name: create kickstart file
   template:
