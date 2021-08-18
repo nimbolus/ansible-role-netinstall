@@ -22,7 +22,8 @@ netinstall_hosts: []
   #   os_type: centos
   #   os_version: 8-stream
 
-netinstall_dhcp_filename: netboot.xyz.efi
+netinstall_dhcp_efi_filename: netboot.xyz.efi
+netinstall_dhcp_bios_filename: netboot.xyz.kpxe
 netinstall_http_url: http://{{ netinstall_router }}
 netinstall_tftp_server: "{{ netinstall_router }}"
 netinstall_tftp_servername: "{{ ansible_nodename }}"

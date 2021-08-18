@@ -21,12 +21,24 @@ subnet {{ netinstall_network }} netmask {{ netinstall_netmask }} {
   class "pxeclients"{
     match if substring (option vendor-class-identifier, 0, 9) = "PXEClient";
     next-server {{ netinstall_tftp_server }};
-    filename "{{ netinstall_dhcp_filename }}";
+
+    if substring (option vendor-class-identifier, 15, 5) = "00000" {
+        # BIOS client
+        filename "{{ netinstall_dhcp_bios_filename }}";
+    }
+    elsif substring (option vendor-class-identifier, 15, 5) = "00006" {
+        # EFI client 32 bit
+        filename "{{ netinstall_dhcp_efi_filename }}";
+    }
+    else {
+        # default to EFI 64 bit
+        filename "{{ netinstall_dhcp_efi_filename }}";
+    }
   }
   class "httpclients" {
     match if substring (option vendor-class-identifier, 0, 10) = "HTTPClient";
     option vendor-class-identifier "HTTPClient";
-    filename "{{ netinstall_http_url }}/{{ netinstall_dhcp_filename }}";
+    filename "{{ netinstall_http_url }}/{{ netinstall_dhcp_efi_filename }}";
   }
 }
 
